@@ -14,23 +14,12 @@ export const PDFDownload = ({
       document={<ReportCardPDF resultState={resultState} />}
       fileName={`student_result.pdf`}
     >
-      {({ loading }: { loading: any }) => {
-        return loading ? (
-          <Button
-            disabled
-            className=" bg-green-600 text-white hover:bg-green-700 mt-6 py-3"
-          >
-            Loading...
-          </Button>
-        ) : (
-          <Button
-            type="button"
-            className=" bg-green-600 text-white hover:bg-green-700 mt-6 py-3"
-          >
-            Print Result
-          </Button>
-        );
-      }}
+      <Button
+        type="button"
+        className=" bg-green-600 text-white hover:bg-green-700 mt-6 py-3"
+      >
+        Print Result
+      </Button>
     </PDFDownloadLink>
   ) : (
     <Button className=" bg-green-600 text-white hover:bg-green-700 mt-6 py-3">

@@ -15,10 +15,12 @@ Font.register({
   src: "https://fonts.google.com/share?selection.family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900",
 });
 
+type StudentTypes = z.infer<typeof studentSchema>;
+
 export const ReportCardPDF = ({
   resultState,
 }: {
-  resultState: z.infer<typeof studentSchema>;
+  resultState: StudentTypes;
 }) => {
   const totalMarks = resultState.subjects.reduce(
     (prevVal, { marks_got: currVal }) => prevVal + currVal,
@@ -42,21 +44,26 @@ export const ReportCardPDF = ({
             </View>
           </View>
           <View style={styles.student_info_section}>
-            {["student_name", "student_class", "batch", "roll_no"].map(
-              (key) => (
-                <View key={key} style={styles.student_info}>
-                  <Text style={styles.text}>{key.split("_").join(" ")}:</Text>
+            {Object.keys(resultState)
+              .slice(0, -2)
+              .map((field) => (
+                <View key={field} style={styles.student_info}>
+                  <Text style={styles.text}>{field.split("_").join(" ")}:</Text>
                   <Text
                     style={{
                       textDecoration: "underline",
                       textTransform: "capitalize",
                     }}
                   >
-                    {key in resultState ? resultState[key] : ""}
+                    {field === "student_name" ||
+                    field === "batch" ||
+                    field === "student_class" ||
+                    field === "roll_no"
+                      ? resultState[field]
+                      : ""}
                   </Text>
                 </View>
-              )
-            )}
+              ))}
           </View>
           <View style={styles.table}>
             <View style={styles.row}>
@@ -131,14 +138,14 @@ const styles = StyleSheet.create({
   bar: {
     height: "100vh",
     width: "30px",
-    backgroundColor: "rgb(5,38,18)",
+    backgroundColor: "#043927",
   },
   main: { padding: "20px" },
   student_info_section: {
     marginVertical: 40,
     flexDirection: "row",
     flexWrap: "wrap",
-    gap:10,
+    gap: 10,
   },
   student_info: {
     flexDirection: "row",
@@ -163,7 +170,7 @@ const styles = StyleSheet.create({
   },
   report_card: {
     borderWidth: 1,
-    backgroundColor: "#062d15",
+    backgroundColor: "#043927",
     padding: 10,
     position: "absolute",
     right: "0px",
@@ -178,7 +185,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   header_cell: {
-    backgroundColor: "#062d15",
+    backgroundColor: "#043927",
     color: "white",
     width: "25%",
     textAlign: "center",
