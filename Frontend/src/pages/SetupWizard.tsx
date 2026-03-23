@@ -38,7 +38,7 @@ const SetupWizard = () => {
       schoolName: "",
       schoolAddress: "",
       contactInfo: "",
-      themeColor: "#043927",
+      themeColor: "#1E3A8A",
       templateId: "classic",
     },
   });
@@ -124,7 +124,7 @@ const SetupWizard = () => {
               <Label>Brand Color</Label>
               <div className="flex items-center gap-2">
                 <Input type="color" {...register("themeColor")} className="w-16 h-10 p-1" />
-                <Input type="text" {...register("themeColor")} className="flex-1" placeholder="#043927" />
+                <Input type="text" {...register("themeColor")} className="flex-1" placeholder="#1E3A8A" />
               </div>
               {errors.themeColor && <p className="text-red-500 text-sm">{errors.themeColor.message}</p>}
             </div>

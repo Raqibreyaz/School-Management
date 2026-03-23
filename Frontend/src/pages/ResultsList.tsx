@@ -55,13 +55,13 @@ const ResultsList = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-3xl font-semibold text-gray-800 dark:text-gray-200">All Results</h2>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">Manage and print student report cards.</p>
+          <h2 className="text-2xl sm:text-3xl font-semibold text-gray-800 dark:text-gray-200">All Results</h2>
+          <p className="text-gray-600 dark:text-gray-400 mt-1 text-sm sm:text-base">Manage and print student report cards.</p>
         </div>
-        <Link to="/results/create">
-          <Button className="bg-blue-600 text-white hover:bg-blue-700 flex items-center gap-2">
+        <Link to="/results/create" className="w-full sm:w-auto">
+          <Button className="bg-blue-600 text-white hover:bg-blue-700 flex items-center justify-center gap-2 w-full">
             <FilePlus size={18} /> Add Result
           </Button>
         </Link>
