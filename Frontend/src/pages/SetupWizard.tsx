@@ -19,8 +19,8 @@ const templates = [
   { id: "classic", name: "Classic Bordered", description: "Formal & Traditional", image: "/templates/classic.png" },
   { id: "modern", name: "Modern Minimal", description: "Clean & Elegant", image: "/templates/modern.png" },
   { id: "vibrant", name: "Vibrant Primary", description: "Colorful & Friendly", image: "/templates/vibrant.png" },
-  { id: "professional", name: "Professional", description: "Data Focus", image: "https://placehold.co/400x600/1e293b/white?text=Professional" },
-  { id: "sidebar", name: "Elegant Sidebar", description: "Modern Layout", image: "https://placehold.co/400x600/0f172a/white?text=Sidebar" },
+  { id: "professional", name: "Professional", description: "Data Focus", image: "/templates/professional.png" },
+  { id: "sidebar", name: "Elegant Sidebar", description: "Modern Layout", image: "/templates/sidebar.png" },
 ];
 
 const SetupWizard = () => {
