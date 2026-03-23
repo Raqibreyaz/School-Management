@@ -10,6 +10,7 @@ import ResultForm from "./components/ResultForm";
 import SetupWizard from "./pages/SetupWizard";
 import ResultsList from "./pages/ResultsList";
 import Settings from "./pages/Settings";
+import EditResult from "./pages/EditResult";
 
 const App = () => {
   const navigate = useNavigate();
@@ -46,6 +47,7 @@ const App = () => {
         <Route element={<Layout />}>
           <Route path="/" element={<Dashboard />} />
           <Route path="/results/create" element={<ResultForm />} />
+          <Route path="/results/edit/:id" element={<EditResult />} />
           <Route path="/results" element={<ResultsList />} />
           <Route path="/settings" element={<Settings />} />
         </Route>

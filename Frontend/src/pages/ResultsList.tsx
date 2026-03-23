@@ -90,9 +90,11 @@ const ResultsList = () => {
                     <td className="px-6 py-4 text-right">
                       <div className="flex justify-end gap-2">
                         <DownloadPDFButton result={result} config={config} />
-                        <Button variant="outline" size="icon" className="h-8 w-8 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800">
-                          <Edit size={16} />
-                        </Button>
+                        <Link to={`/results/edit/${result.id}`}>
+                          <Button variant="outline" size="icon" className="h-8 w-8 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800">
+                            <Edit size={16} />
+                          </Button>
+                        </Link>
                         <Button 
                           variant="outline" 
                           size="icon" 

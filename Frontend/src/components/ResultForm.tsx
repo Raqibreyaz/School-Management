@@ -27,11 +27,15 @@ const defaultValues = {
   ],
 };
 
-const ResultForm: React.FC = () => {
+interface ResultFormProps {
+  initialData?: any;
+}
+
+const ResultForm: React.FC<ResultFormProps> = ({ initialData }) => {
   const config = useConfigStore((state) => state.config);
   const [resultState, setResultState] = useState<z.infer<
     typeof studentSchema
-  > | null>(null);
+  > | null>(initialData || null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {
@@ -42,7 +46,7 @@ const ResultForm: React.FC = () => {
     formState: { errors, isDirty },
   } = useForm({
     resolver: zodResolver(studentSchema),
-    defaultValues,
+    defaultValues: initialData || defaultValues,
   });
 
   const { fields, append, remove } = useFieldArray({
@@ -55,12 +59,18 @@ const ResultForm: React.FC = () => {
       setIsSubmitting(true);
       const resultToSave = {
         ...data,
-        createdAt: new Date().toISOString(),
+        createdAt: initialData?.createdAt || new Date().toISOString(),
       };
 
-      await db.results.add(resultToSave);
-      setResultState(data);
-      toast.success("Result generated and saved!");
+      if (initialData?.id) {
+        await db.results.put({ ...resultToSave, id: initialData.id });
+        setResultState({ ...data, id: initialData.id } as any);
+        toast.success("Result updated successfully!");
+      } else {
+        await db.results.add(resultToSave);
+        setResultState(data);
+        toast.success("Result generated and saved!");
+      }
 
       // We don't reset immediately so the PDF download button appears with the data.
       // Reset could be triggered by a "Start New" button afterwards.
@@ -83,7 +93,7 @@ const ResultForm: React.FC = () => {
     <div className="p-8 bg-white dark:bg-gray-900 rounded-lg shadow-sm border border-gray-100 dark:border-gray-800 max-w-4xl mx-auto">
       <div className="flex justify-between items-center mb-6 border-b dark:border-gray-800 pb-4">
         <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200">
-          Create Report Card
+          {initialData ? "Edit Report Card" : "Create Report Card"}
         </h2>
         {isDirty && (
           <Button
@@ -104,7 +114,7 @@ const ResultForm: React.FC = () => {
             <Input {...register("student_name")} placeholder="John Doe" />
             {errors.student_name && (
               <p className="text-red-500 text-sm">
-                {errors.student_name.message}
+                {errors.student_name.message as string}
               </p>
             )}
           </div>
@@ -113,7 +123,7 @@ const ResultForm: React.FC = () => {
             <Input {...register("student_class")} placeholder="e.g. Class 10" />
             {errors.student_class && (
               <p className="text-red-500 text-sm">
-                {errors.student_class.message}
+                {errors.student_class.message as string}
               </p>
             )}
           </div>
@@ -121,14 +131,18 @@ const ResultForm: React.FC = () => {
             <Label>Section / Batch</Label>
             <Input {...register("batch")} placeholder="e.g. Section A" />
             {errors.batch && (
-              <p className="text-red-500 text-sm">{errors.batch.message}</p>
+              <p className="text-red-500 text-sm">
+                {errors.batch.message as string}
+              </p>
             )}
           </div>
           <div className="space-y-2">
             <Label>Roll No</Label>
             <Input {...register("roll_no")} placeholder="e.g. 1042" />
             {errors.roll_no && (
-              <p className="text-red-500 text-sm">{errors.roll_no.message}</p>
+              <p className="text-red-500 text-sm">
+                {errors.roll_no.message as string}
+              </p>
             )}
           </div>
         </div>
@@ -162,9 +176,12 @@ const ResultForm: React.FC = () => {
                   {...register(`subjects.${index}.subject_name`)}
                   placeholder="e.g. Mathematics"
                 />
-                {errors.subjects?.[index]?.subject_name && (
+                {(errors.subjects as any)?.[index]?.subject_name && (
                   <p className="text-red-500 text-sm">
-                    {errors.subjects[index].subject_name.message}
+                    {
+                      (errors.subjects as any)[index].subject_name
+                        .message as string
+                    }
                   </p>
                 )}
               </div>
@@ -177,9 +194,12 @@ const ResultForm: React.FC = () => {
                   })}
                   min={0}
                 />
-                {errors.subjects?.[index]?.marks_got && (
+                {(errors.subjects as any)?.[index]?.marks_got && (
                   <p className="text-red-500 text-sm">
-                    {errors.subjects[index].marks_got.message}
+                    {
+                      (errors.subjects as any)[index].marks_got
+                        .message as string
+                    }
                   </p>
                 )}
               </div>
@@ -192,9 +212,12 @@ const ResultForm: React.FC = () => {
                   })}
                   min={1}
                 />
-                {errors.subjects?.[index]?.marks_from && (
+                {(errors.subjects as any)?.[index]?.marks_from && (
                   <p className="text-red-500 text-sm">
-                    {errors.subjects[index].marks_from.message}
+                    {
+                      (errors.subjects as any)[index].marks_from
+                        .message as string
+                    }
                   </p>
                 )}
               </div>
@@ -216,31 +239,39 @@ const ResultForm: React.FC = () => {
           <Label>Teacher's Remarks / Note</Label>
           <Input {...register("note")} placeholder="Excellent performance..." />
           {errors.note && (
-            <p className="text-red-500 text-sm">{errors.note.message}</p>
+            <p className="text-red-500 text-sm">
+              {errors.note.message as string}
+            </p>
           )}
         </div>
 
-        <div className="flex items-center gap-4 mt-8 pt-6 border-t dark:border-gray-800">
-          {!resultState ? (
-            <Button
-              type="submit"
-              disabled={isSubmitting}
-              className="bg-blue-600 text-white hover:bg-blue-700 py-6 px-8 text-lg flex-1"
-            >
-              {isSubmitting ? "Saving..." : "Generate Result & Save"}
-            </Button>
-          ) : (
+        <div className="flex sm:flex-nowrap flex-wrap items-center gap-4 mt-8 pt-6 border-t dark:border-gray-800">
+          <Button
+            type="submit"
+            disabled={isSubmitting}
+            className="bg-blue-600 text-white hover:bg-blue-700 py-6 px-8 text-lg flex-1"
+          >
+            {isSubmitting
+              ? "Saving..."
+              : initialData
+                ? "Update Result"
+                : "Generate Result & Save"}
+          </Button>
+
+          {resultState && (
             <>
-              <Button
-                type="button"
-                onClick={() => {
-                  reset(defaultValues);
-                  setResultState(null);
-                }}
-                className="bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 py-6 px-8 text-lg"
-              >
-                Start New Result
-              </Button>
+              {!initialData && (
+                <Button
+                  type="button"
+                  onClick={() => {
+                    reset(defaultValues);
+                    setResultState(null);
+                  }}
+                  className="bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 py-6 px-8 text-lg"
+                >
+                  Start New Result
+                </Button>
+              )}
               <div className="flex-1 flex" onClick={(e) => e.stopPropagation()}>
                 <PDFDownload resultState={resultState} config={config} />
               </div>
