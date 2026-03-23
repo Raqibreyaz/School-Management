@@ -126,8 +126,19 @@ const SetupWizard = () => {
             <div className="space-y-2">
               <Label>Brand Color</Label>
               <div className="flex items-center gap-2">
-                <Input type="color" {...register("themeColor")} className="w-full h-10 p-1 cursor-pointer" />
-                <Input type="text" {...register("themeColor")} className="flex-1" placeholder="#1E3A8A" />
+                <Input 
+                  type="color" 
+                  {...register("themeColor")} 
+                  value={watch("themeColor")}
+                  className="w-14 h-10 p-1 cursor-pointer" 
+                />
+                <Input 
+                  type="text" 
+                  {...register("themeColor")} 
+                  value={watch("themeColor")}
+                  className="flex-1" 
+                  placeholder="#1E3A8A" 
+                />
               </div>
               {errors.themeColor && <p className="text-red-500 text-sm">{errors.themeColor.message}</p>}
             </div>
