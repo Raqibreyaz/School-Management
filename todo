@@ -1,6 +1,6 @@
-- responsive for mobile
 - choose a template at the school config to follow at each result
 
 DONE:
 - results list getting hanged on loading the page, maybe it generated pdf blob of each one each time
 - result editing functionality
+- responsive for mobile

@@ -11,7 +11,17 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useConfigStore } from "../store/useConfigStore";
 
+import { Check } from "lucide-react";
+
 type ConfigFormValues = z.infer<typeof configSchema>;
+
+const templates = [
+  { id: "classic", name: "Classic Bordered", description: "Formal & Traditional", image: "/templates/classic.png" },
+  { id: "modern", name: "Modern Minimal", description: "Clean & Elegant", image: "/templates/modern.png" },
+  { id: "vibrant", name: "Vibrant Primary", description: "Colorful & Friendly", image: "/templates/vibrant.png" },
+  { id: "professional", name: "Professional", description: "Data Focus", image: "https://placehold.co/400x600/1e293b/white?text=Professional" },
+  { id: "sidebar", name: "Elegant Sidebar", description: "Modern Layout", image: "https://placehold.co/400x600/0f172a/white?text=Sidebar" },
+];
 
 const SetupWizard = () => {
   const navigate = useNavigate();
@@ -25,6 +35,8 @@ const SetupWizard = () => {
     register,
     handleSubmit,
     reset,
+    setValue,
+    watch,
     formState: { errors },
   } = useForm<ConfigFormValues>({
     resolver: zodResolver(configSchema),
@@ -33,7 +45,7 @@ const SetupWizard = () => {
       schoolAddress: config.schoolAddress,
       contactInfo: config.contactInfo,
       themeColor: config.themeColor,
-      templateId: config.templateId as "classic" | "modern",
+      templateId: config.templateId as any,
     } : {
       schoolName: "",
       schoolAddress: "",
@@ -43,6 +55,8 @@ const SetupWizard = () => {
     },
   });
 
+  const selectedTemplate = watch("templateId");
+
   useEffect(() => {
     if (config) {
       reset({
@@ -50,7 +64,7 @@ const SetupWizard = () => {
         schoolAddress: config.schoolAddress,
         contactInfo: config.contactInfo,
         themeColor: config.themeColor,
-        templateId: config.templateId as "classic" | "modern",
+        templateId: config.templateId as any,
       });
       if (config.logoUrl) {
         setLogoUrl(config.logoUrl);
@@ -96,16 +110,27 @@ const SetupWizard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center p-4">
-      <div className="max-w-xl w-full bg-white dark:bg-gray-900 p-8 rounded-lg shadow-xl border dark:border-gray-800">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center p-4 md:p-10">
+      <div className="max-w-4xl w-full bg-white dark:bg-gray-900 p-6 md:p-10 rounded-2xl shadow-xl border dark:border-gray-800">
         <h2 className="text-3xl font-bold text-center text-gray-800 dark:text-gray-200 mb-2">School Setup</h2>
         <p className="text-gray-600 dark:text-gray-400 text-center mb-8">Welcome to Result Maker. Customize your app to match your school's branding.</p>
         
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          <div className="space-y-2">
-            <Label>School Name *</Label>
-            <Input {...register("schoolName")} placeholder="e.g. Western High School" />
-            {errors.schoolName && <p className="text-red-500 text-sm">{errors.schoolName.message}</p>}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label>School Name *</Label>
+              <Input {...register("schoolName")} placeholder="e.g. Western High School" />
+              {errors.schoolName && <p className="text-red-500 text-sm">{errors.schoolName.message}</p>}
+            </div>
+
+            <div className="space-y-2">
+              <Label>Brand Color</Label>
+              <div className="flex items-center gap-2">
+                <Input type="color" {...register("themeColor")} className="w-full h-10 p-1 cursor-pointer" />
+                <Input type="text" {...register("themeColor")} className="flex-1" placeholder="#1E3A8A" />
+              </div>
+              {errors.themeColor && <p className="text-red-500 text-sm">{errors.themeColor.message}</p>}
+            </div>
           </div>
 
           <div className="space-y-2">
@@ -119,26 +144,43 @@ const SetupWizard = () => {
             <Input {...register("contactInfo")} placeholder="Phone or Email" />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label>Brand Color</Label>
-              <div className="flex items-center gap-2">
-                <Input type="color" {...register("themeColor")} className="w-16 h-10 p-1" />
-                <Input type="text" {...register("themeColor")} className="flex-1" placeholder="#1E3A8A" />
-              </div>
-              {errors.themeColor && <p className="text-red-500 text-sm">{errors.themeColor.message}</p>}
-            </div>
+          <div className="space-y-4 pt-4 border-t dark:border-gray-800">
+            <Label className="text-lg font-semibold">Choose Your Result Template</Label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {templates.map((t) => (
+                <div 
+                  key={t.id}
+                  onClick={() => setValue("templateId", t.id as any)}
+                  className={`relative cursor-pointer group rounded-xl border-2 transition-all overflow-hidden ${
+                    selectedTemplate === t.id 
+                      ? "border-blue-600 ring-2 ring-blue-600/20 shadow-lg shadow-blue-500/10" 
+                      : "border-gray-200 dark:border-gray-800 hover:border-blue-300 dark:hover:border-blue-800 shadow-sm"
+                  }`}
+                >
+                  <div className="aspect-3/4 overflow-hidden bg-gray-100 dark:bg-gray-800">
+                    <img 
+                      src={t.image} 
+                      alt={t.name} 
+                      className={`w-full h-full object-cover transition-transform duration-500 ${
+                        selectedTemplate === t.id ? "scale-105" : "group-hover:scale-105"
+                      }`}
+                    />
+                  </div>
+                  
+                  {selectedTemplate === t.id && (
+                    <div className="absolute top-2 right-2 bg-blue-600 text-white p-1 rounded-full shadow-md z-10">
+                      <Check size={16} strokeWidth={3} />
+                    </div>
+                  )}
 
-            <div className="space-y-2">
-              <Label>Report Card Template</Label>
-              <select 
-                {...register("templateId")}
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                <option value="classic">Classic Bordered</option>
-                <option value="modern">Modern Minimal</option>
-              </select>
+                  <div className="p-3 bg-white dark:bg-gray-900 border-t dark:border-gray-800">
+                    <h4 className="font-semibold text-sm text-gray-800 dark:text-gray-100">{t.name}</h4>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">{t.description}</p>
+                  </div>
+                </div>
+              ))}
             </div>
+            {errors.templateId && <p className="text-red-500 text-sm">{errors.templateId.message}</p>}
           </div>
 
           <div className="space-y-2 pt-2 border-t dark:border-gray-800">

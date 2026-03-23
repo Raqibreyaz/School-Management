@@ -5,5 +5,5 @@ export const configSchema = z.object({
   schoolAddress: z.string().min(5, "Address is required"),
   contactInfo: z.string().optional(),
   themeColor: z.string().regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, "Invalid color format"),
-  templateId: z.enum(["classic", "modern"]),
+  templateId: z.enum(["classic", "modern", "vibrant", "professional", "sidebar"]),
 });

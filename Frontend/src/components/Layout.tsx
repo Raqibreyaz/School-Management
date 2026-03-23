@@ -78,7 +78,7 @@ const Layout = () => {
             >
               <Menu size={24} />
             </button>
-            <h2 className="text-lg md:text-xl font-semibold text-gray-800 dark:text-white truncate max-w-[180px] sm:max-w-md">{config?.schoolName}</h2>
+            <h2 className="text-lg md:text-xl font-semibold text-gray-800 dark:text-white truncate max-w-45 sm:max-w-md">{config?.schoolName}</h2>
           </div>
           <ModeToggle />
         </header>
