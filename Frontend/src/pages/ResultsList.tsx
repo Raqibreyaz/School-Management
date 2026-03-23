@@ -2,20 +2,49 @@ import { useLiveQuery } from "dexie-react-hooks";
 import { db } from "../db/db";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { FilePlus, Edit, Trash2, Printer, FileText } from "lucide-react";
-import { PDFDownloadLink } from "@react-pdf/renderer";
+import { FilePlus, Edit, Trash2, Printer, FileText, Loader2 } from "lucide-react";
+import { pdf } from "@react-pdf/renderer";
 import { ReportCardPDF } from "../components/ReportCardPDF";
 import { useConfigStore } from "../store/useConfigStore";
-import { useState, useEffect } from "react";
+import { useState } from "react";
+
+const DownloadPDFButton = ({ result, config }: { result: any, config: any }) => {
+  const [isGenerating, setIsGenerating] = useState(false);
+
+  const handleDownload = async () => {
+    try {
+      setIsGenerating(true);
+      const blob = await pdf(<ReportCardPDF resultState={result} config={config} />).toBlob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `${result.student_name}_result.pdf`;
+      link.click();
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Failed to generate PDF", error);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  return (
+    <Button 
+      variant="outline" 
+      size="icon" 
+      onClick={handleDownload}
+      disabled={isGenerating}
+      title="Download PDF"
+      className="h-8 w-8 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800 hover:bg-blue-50 dark:hover:bg-blue-900/30"
+    >
+      {isGenerating ? <Loader2 size={16} className="animate-spin" /> : <Printer size={16} />}
+    </Button>
+  );
+};
 
 const ResultsList = () => {
   const config = useConfigStore((state) => state.config);
   const results = useLiveQuery(() => db.results.orderBy('createdAt').reverse().toArray()) || [];
-  const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
 
   const handleDelete = async (id: number | undefined) => {
     if (!id) return;
@@ -60,20 +89,7 @@ const ResultsList = () => {
                     <td className="px-6 py-4">{new Date(result.createdAt).toLocaleDateString()}</td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex justify-end gap-2">
-                        {isClient ? (
-                          <PDFDownloadLink
-                            document={<ReportCardPDF resultState={result as any} config={config} />}
-                            fileName={`${result.student_name}_result.pdf`}
-                          >
-                            <Button variant="outline" size="icon" className="h-8 w-8 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800 hover:bg-blue-50 dark:hover:bg-blue-900/30">
-                              <Printer size={16} />
-                            </Button>
-                          </PDFDownloadLink>
-                        ) : (
-                          <Button variant="outline" size="icon" className="h-8 w-8 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800 hover:bg-blue-50 dark:hover:bg-blue-900/30">
-                            <Printer size={16} />
-                          </Button>
-                        )}
+                        <DownloadPDFButton result={result} config={config} />
                         <Button variant="outline" size="icon" className="h-8 w-8 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800">
                           <Edit size={16} />
                         </Button>
